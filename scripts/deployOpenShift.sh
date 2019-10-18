@@ -290,25 +290,42 @@ master0
 glusterfs
 new_nodes
 
-# Set variables common for all OSEv3 hosts
+##############################################################################
+# Common / Required configuration variables                                  #
+##############################################################################
 [OSEv3:vars]
 ansible_ssh_user=$SUDOUSER
 ansible_become=yes
-openshift_install_examples=true
-deployment_type=openshift-enterprise
+
 openshift_release=v3.11
 openshift_image_tag=v3.11.${MINORVERSION}
 openshift_pkg_version=-3.11.${MINORVERSION}
+debug_level=2
+
+openshift_deployment_type=openshift-enterprise
+openshift_disable_check=memory_availability,docker_image_availability,disk_availability
+
+# NOTE: Specify default wildcard domain for apps
+openshift_master_default_subdomain=$ROUTING
+
+# NOTE: If using different internal & external FQDN (ie. using LB)
+# set external cluster FQDN here
+# Addresses for connecting to the OpenShift master nodes
+$MASTERCLUSTERADDRESS
+# Type of clustering being used by OCP
+$HAMODE
+
+openshift_install_examples=true
 docker_udev_workaround=True
 openshift_use_dnsmasq=true
-openshift_master_default_subdomain=$ROUTING
+
 openshift_override_hostname_check=true
 osm_use_cockpit=true
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 openshift_master_api_port=443
 openshift_master_console_port=443
 osm_default_node_selector='node-role.kubernetes.io/compute=true'
-openshift_disable_check=memory_availability,docker_image_availability
+
 $CLOUDKIND
 $SCKIND
 $CUSTOMCSS
@@ -337,11 +354,9 @@ openshift_hosted_registry_storage_azure_blob_realm=$DOCKERREGISTRYREALM
 # Deploy Service Catalog
 openshift_enable_service_catalog=false
 
-# Type of clustering being used by OCP
-$HAMODE
 
-# Addresses for connecting to the OpenShift master nodes
-$MASTERCLUSTERADDRESS
+
+
 
 # Enable HTPasswdPasswordIdentityProvider
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]

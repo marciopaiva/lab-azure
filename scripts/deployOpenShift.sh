@@ -271,10 +271,10 @@ $cnsglusterinfo
 
 # host group for nodes
 [nodes]
-$mastergroup
-$infragroup
-$nodegroup
-$cnsgroup
+$mastergroup openshift_node_problem_detector_install=true
+$infragroup openshift_node_problem_detector_install=true
+$nodegroup openshift_node_problem_detector_install=true
+$cnsgroup openshift_node_problem_detector_install=true
 
 # host group for adding new nodes
 [new_nodes]
@@ -355,16 +355,16 @@ openshift_storage_glusterfs_heketi_image=registry.access.redhat.com/rhgs3/rhgs-v
 # Setup metrics
 openshift_metrics_install_metrics=false
 openshift_metrics_start_cluster=true
-openshift_metrics_hawkular_nodeselector={"node-role.kubernetes.io/infra":"true"}
-openshift_metrics_cassandra_nodeselector={"node-role.kubernetes.io/infra":"true"}
-openshift_metrics_heapster_nodeselector={"node-role.kubernetes.io/infra":"true"}
+openshift_metrics_hawkular_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
+openshift_metrics_cassandra_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
+openshift_metrics_heapster_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
 
 # Setup logging
 openshift_logging_install_logging=false
 openshift_logging_fluentd_nodeselector={"logging":"true"}
-openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"}
-openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra":"true"}
-openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra":"true"}
+openshift_logging_es_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
+openshift_logging_kibana_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
+openshift_logging_curator_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
 
 

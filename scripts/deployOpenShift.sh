@@ -251,7 +251,37 @@ fi
 echo $(date) " - Create Ansible Hosts file"
 
 cat > /etc/ansible/hosts <<EOF
-# Create an OSEv3 group that contains the masters and nodes groups
+###############################################################################
+#                         OPENSHIFT 3.11 - ALL-IN-ON                          #
+###############################################################################
+# host group for masters
+[masters]
+${MASTER}[01:${MASTERLIST}]
+
+# host group for etcd
+[etcd]
+${MASTER}[01:${MASTERLIST}]
+
+[master0]
+${MASTER}01
+
+# Only populated when CNS is enabled
+[glusterfs]
+$cnsglusterinfo
+
+# host group for nodes
+[nodes]
+$mastergroup
+$infragroup
+$nodegroup
+$cnsgroup
+
+# host group for adding new nodes
+[new_nodes]
+
+##############################################################################
+# OSEv3 group that contains the masters and nodes groups                     #
+##############################################################################
 [OSEv3:children]
 masters
 nodes
@@ -337,30 +367,7 @@ openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra":"true"}
 openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra":"true"}
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
 
-# host group for masters
-[masters]
-${MASTER}[01:${MASTERLIST}]
 
-# host group for etcd
-[etcd]
-${MASTER}[01:${MASTERLIST}]
-
-[master0]
-${MASTER}01
-
-# Only populated when CNS is enabled
-[glusterfs]
-$cnsglusterinfo
-
-# host group for nodes
-[nodes]
-$mastergroup
-$infragroup
-$nodegroup
-$cnsgroup
-
-# host group for adding new nodes
-[new_nodes]
 EOF
 
 # Update WALinuxAgent

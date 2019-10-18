@@ -481,7 +481,6 @@ openshift_metrics_duration=30
 # cassandra 
 openshift_metrics_cassandra_storage_type=dynamic
 openshift_metrics_cassandra_pvc_size=300Gi
-openshift_metrics_cassandra_replicas=1
 openshift_metrics_cassandra_limits_memory=2Gi
 openshift_metrics_cassandra_limits_cpu=800m
 openshift_metrics_cassandra_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
@@ -489,7 +488,6 @@ openshift_metrics_cassandra_nodeselector={"kubernetes.io/hostname":"ocpmec-infra
 # hawkular
 openshift_metrics_hawkular_limits_memory=2Gi
 openshift_metrics_hawkular_limits_cpu=800m
-openshift_metrics_hawkular_replicas=1
 openshift_metrics_hawkular_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
 
 # heapster
@@ -540,6 +538,7 @@ openshift_logging_es_memory_limit=1Gi
 openshift_logging_es_pvc_size=300Gi
 openshift_logging_es_pvc_dynamic=true
 openshift_logging_es_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
+openshift_logging_es_ops_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
 
 # Kibana
 openshift_logging_kibana_cpu_limit=500m

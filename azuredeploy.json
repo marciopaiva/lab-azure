@@ -149,7 +149,7 @@
 		},
 		"minorVersion": {
 			"type": "string",
-			"defaultValue": "69",
+			"defaultValue": "153",
 			"metadata": {
 				"description": "Minor version of OpenShift 3.11 to deploy"
 			}

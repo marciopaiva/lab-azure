@@ -155,7 +155,7 @@ MASTERLIST="0$MASTERCOUNT"
 for (( c=1; c<=$MASTERCOUNT; c++ ))
 do
     mastergroup="$mastergroup
-${MASTER}0$c openshift_node_group_name='node-config-master'"
+${MASTER}0$c openshift_node_group_name='node-config-master' openshift_node_problem_detector_install=true"
 done
 
 # Create Infra nodes grouping 
@@ -163,7 +163,7 @@ echo $(date) " - Creating Infra nodes grouping"
 for (( c=1; c<=$INFRACOUNT; c++ ))
 do
     infragroup="$infragroup
-${INFRA}0$c openshift_node_group_name='node-config-infra'"
+${INFRA}0$c openshift_node_group_name='node-config-infra' openshift_node_problem_detector_install=true"
 done
 
 # Create Nodes grouping
@@ -174,20 +174,20 @@ then
 	for (( c=1; c<=9; c++ ))
 	do
 		nodegroup="$nodegroup
-${NODE}0$c openshift_node_group_name='node-config-compute'"
+${NODE}0$c openshift_node_group_name='node-config-compute' openshift_node_problem_detector_install=true"
 	done
 
 	for (( c=10; c<=$NODECOUNT; c++ ))
 	do
 		nodegroup="$nodegroup
-${NODE}$c openshift_node_group_name='node-config-compute'"
+${NODE}$c openshift_node_group_name='node-config-compute' openshift_node_problem_detector_install=true"
 	done
 else
 	# If less than 10 compout nodes
 	for (( c=1; c<=$NODECOUNT; c++ ))
 	do
 		nodegroup="$nodegroup
-${NODE}0$c openshift_node_group_name='node-config-compute'"
+${NODE}0$c openshift_node_group_name='node-config-compute' openshift_node_problem_detector_install=true"
 	done
 fi
 
@@ -199,7 +199,7 @@ then
     for (( c=1; c<=$CNSCOUNT; c++ ))
     do
         cnsgroup="$cnsgroup
-${CNS}0$c openshift_node_group_name='node-config-compute'"
+${CNS}0$c openshift_node_group_name='node-config-compute' openshift_node_problem_detector_install=true"
     done
 fi
 
@@ -271,10 +271,10 @@ $cnsglusterinfo
 
 # host group for nodes
 [nodes]
-$mastergroup openshift_node_problem_detector_install=true
-$infragroup openshift_node_problem_detector_install=true
-$nodegroup openshift_node_problem_detector_install=true
-$cnsgroup openshift_node_problem_detector_install=true
+$mastergroup 
+$infragroup
+$nodegroup
+$cnsgroup
 
 # host group for adding new nodes
 [new_nodes]

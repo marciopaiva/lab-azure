@@ -1348,6 +1348,9 @@
 			"type": "Microsoft.Network/publicIPAddresses",
 			"name": "[variables('infraLbPublicIpDnsLabel')]",
 			"location": "[parameters('location')]",
+			"sku":{
+                                "name": "Standard"
+                        },
 			"tags": {
 				"displayName": "OpenShiftInfraLBPublicIP",
 				"provider": "[variables('redHatTags').provider]",
@@ -1481,7 +1484,7 @@
 			"name": "[variables('infraLoadBalancerName')]",
 			"location": "[parameters('location')]",
 			"sku":{
-				"name":"Standard"
+				"name": "Standard"
 			},
 			"tags": {
 				"displayName": "OpenShiftInfraLB",

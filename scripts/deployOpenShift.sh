@@ -411,6 +411,14 @@ openshift_storage_glusterfs_heketi_image=registry.access.redhat.com/rhgs3/rhgs-v
 
 ##############################################################################
 #
+# OpenShift Router Options
+#
+
+openshift_hosted_router_extended_validation=true
+$ROUTINGCERTIFICATE
+
+##############################################################################
+#
 # Openshift Registry Options
 #
 
@@ -429,29 +437,119 @@ openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY
 openshift_hosted_registry_storage_azure_blob_container=registry
 openshift_hosted_registry_storage_azure_blob_realm=$DOCKERREGISTRYREALM
 openshift_hosted_registry_storage_volume_size=100Gi
-$ROUTINGCERTIFICATE
 
+##############################################################################
+#
+# Cluster Prometheus Monitoring
+#
 
+openshift_cluster_monitoring_operator_install=true
+openshift_cluster_monitoring_operator_node_selector={"kubernetes.io/hostname":"ocpmec-infra01"}
 
+openshift_cluster_monitoring_operator_prometheus_storage_enabled=true
+openshift_cluster_monitoring_operator_alertmanager_storage_enabled=true
+openshift_cluster_monitoring_operator_prometheus_storage_capacity=300Gi
+openshift_cluster_monitoring_operator_alertmanager_storage_capacity=50Gi
 
+# Suggested Quotas and limits for Prometheus components
+openshift_prometheus_memory_requests=2Gi
+openshift_prometheus_cpu_requests=750m
+openshift_prometheus_memory_limit=2Gi
+openshift_prometheus_cpu_limit=750m
+openshift_prometheus_alertmanager_memory_requests=300Mi
+openshift_prometheus_alertmanager_cpu_requests=200m
+openshift_prometheus_alertmanager_memory_limit=300Mi
+openshift_prometheus_alertmanager_cpu_limit=200m
+openshift_prometheus_alertbuffer_memory_requests=300Mi
+openshift_prometheus_alertbuffer_cpu_requests=200m
+openshift_prometheus_alertbuffer_memory_limit=300Mi
+openshift_prometheus_alertbuffer_cpu_limit=200m
 
+##############################################################################
+#
+# Metrics deployment
+#
 
-# Setup metrics
 openshift_metrics_install_metrics=false
+
+# Start metrics cluster after deploying the components
 openshift_metrics_start_cluster=true
-openshift_metrics_hawkular_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
-openshift_metrics_cassandra_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
-openshift_metrics_heapster_nodeselector={"kubernetes.io/hostname":"ocpmec-infra01"}
 
-# Setup logging
+# Store Metrics for 1 days
+openshift_metrics_duration=30
+
+# cassandra 
+openshift_metrics_cassandra_storage_type=dynamic
+openshift_metrics_cassandra_pvc_size=300Gi
+openshift_metrics_cassandra_replicas=1
+openshift_metrics_cassandra_limits_memory=2Gi
+openshift_metrics_cassandra_limits_cpu=800m
+openshift_metrics_cassandra_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
+
+# hawkular
+openshift_metrics_hawkular_limits_memory=2Gi
+openshift_metrics_hawkular_limits_cpu=800m
+openshift_metrics_hawkular_replicas=1
+openshift_metrics_hawkular_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
+
+# heapster
+openshift_metrics_heapster_limits_memory=2Gi
+openshift_metrics_heapster_limits_cpu=800m
+openshift_metrics_heapster_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
+
+##############################################################################
+#
+# Logging deployment
+#
+
 openshift_logging_install_logging=false
-openshift_logging_fluentd_nodeselector={"logging":"true"}
-openshift_logging_es_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
-openshift_logging_kibana_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
-openshift_logging_curator_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
 
-##########
+openshift_logging_master_public_url=https://{{ openshift_master_cluster_public_hostname }}:{{ openshift_master_console_port }}
+
+# logging curator
+openshift_logging_curator_default_days=10
+openshift_logging_curator_cpu_limit=500m
+openshift_logging_curator_memory_limit=1Gi
+openshift_logging_curator_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
+
+# Configure a second ES+Kibana cluster for operations logs
+# Fluend splits the logs accordingly
+openshift_logging_use_ops=true
+
+# Fluentd
+openshift_logging_fluentd_cpu_limit=500m
+openshift_logging_fluentd_memory_limit=1Gi
+# collect audit.log to ES
+openshift_logging_fluentd_audit_container_engine=true
+openshift_logging_fluentd_nodeselector={"logging":"true"}
+
+# eventrouter
+openshift_logging_install_eventrouter=true
+openshift_logging_eventrouter_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
+
+# Elasticsearch (ES)
+# ES cluster size (HA ES >= 3)
+openshift_logging_es_cluster_size=1
+# replicas per shard
+#openshift_logging_es_number_of_replicas=1
+# shards per index
+#openshift_logging_es_number_of_shards=1
+openshift_logging_es_cpu_limit=500m
+openshift_logging_es_memory_limit=1Gi
+# PVC size omitted == ephemeral vols are used
+openshift_logging_es_pvc_size=300Gi
+openshift_logging_es_pvc_dynamic=true
+openshift_logging_es_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
+
+# Kibana
+openshift_logging_kibana_cpu_limit=500m
+openshift_logging_kibana_memory_limit=1Gi
+openshift_logging_kibana_replica_count=1
+# expose ES? (default false)
+#openshift_logging_es_allow_external=false
+openshift_logging_kibana_nodeselector={"kubernetes.io/hostname":"ocpmec-infra03"}
+
+#####################################################################################
 $CUSTOMCSS
 $PROXY
 

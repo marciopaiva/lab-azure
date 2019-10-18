@@ -314,58 +314,127 @@ openshift_master_default_subdomain=$ROUTING
 $MASTERCLUSTERADDRESS
 # Type of clustering being used by OCP
 $HAMODE
-
-openshift_install_examples=true
-docker_udev_workaround=True
-openshift_use_dnsmasq=true
-
-openshift_override_hostname_check=true
-osm_use_cockpit=true
-os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 openshift_master_api_port=443
 openshift_master_console_port=443
-osm_default_node_selector='node-role.kubernetes.io/compute=true'
 
+openshift_master_dynamic_provisioning_enabled=true
+
+$MASTERCERTIFICATE
+
+openshift_clock_enabled=true
+openshift_use_dnsmasq=true
+openshift_install_examples=true
+openshift_override_hostname_check=true
+dynamic_volumes_check=false
+
+# Network 
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+
+# Audit log
+openshift_master_audit_config={"enabled": true, "auditFilePath": "/var/lib/origin/audit-ocp.log", "maximumFileRetentionDays": 7, "maximumFileSizeMegabytes": 10, "maximumRetainedFiles": 3}
+
+##############################################################################
+# Additional configuration variables follow                                  #
+##############################################################################
+
+##############################################################################
+#
+# Azure Config
+#
 $CLOUDKIND
 $SCKIND
-$CUSTOMCSS
-$ROUTINGCERTIFICATE
-$MASTERCERTIFICATE
-$PROXY
 
+##############################################################################
+#
+# Service Catalog
+#
+openshift_enable_service_catalog=false
+
+##############################################################################
+#
+# Service Broker
+#
+ansible_service_broker_install=false
+template_service_broker_install=false
+template_service_broker_selector={"type":"infra-apps"}
+
+##############################################################################
+#
+# Docker
+#
+docker_version="1.13.1"
+docker_udev_workaround=true
+openshift_docker_options='--log-driver=json-file --signature-verification=False --selinux-enabled --log-opt max-size=1M --log-opt max-file=3 -l warn --ipv6=false --insecure-registry 172.30.0.0/16'
+
+##############################################################################
+#
+# Auth Provider
+#
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+
+# For embeddng the initial users in the configuration file use this syntax
+# Note: user==password for this example
+openshift_master_htpasswd_users={'ocpadmin':'$apr1$ZuJlQr.Y$6abuePAhKG0iY8QDNWoq80','developer':'$apr1$QE2hKzLx$4ZeptR1hHNP538zRh/Pew.'}
+
+##############################################################################
+#
+# Enable Cockpit
+#
+osm_use_cockpit=true
+osm_cockpit_plugins=['cockpit-kubernetes']
+osm_default_node_selector='node-role.kubernetes.io/compute=true'
+
+##############################################################################
+#
+# OpenShift Labels
+#
+
+openshift_node_groups=[{'name': 'node-config-master',  'labels': ['node-role.kubernetes.io/master=true' ],'edits': [{ 'key': 'kubeletArguments.kube-reserved','value': ['cpu=100m,memory=128M']}, { 'key': 'kubeletArguments.system-reserved','value': ['cpu=100m,memory=256M']}, { 'key': 'kubeletArguments.pods-per-core','value': ['10']},{ 'key': 'kubeletArguments.max-pods','value': ['160']}, { 'key': 'kubeletArguments.maximum-dead-containers','value': ['5']}, { 'key': 'kubeletArguments.maximum-dead-containers-per-container','value': ['1']}, { 'key': 'kubeletArguments.image-gc-high-threshold','value': ['80']}, { 'key': 'kubeletArguments.image-gc-low-threshold','value': ['60']}]}, {'name': 'node-config-infra',   'labels': ['node-role.kubernetes.io/infra=true','type=infra-router'], 'edits':[{ 'key': 'kubeletArguments.kube-reserved','value': ['cpu=100m,memory=128M']}, { 'key': 'kubeletArguments.system-reserved','value': ['cpu=100m,memory=256M']}, { 'key': 'kubeletArguments.pods-per-core','value': ['10']}, { 'key': 'kubeletArguments.max-pods','value': ['160']}, { 'key': 'kubeletArguments.maximum-dead-containers','value': ['5']}, { 'key': 'kubeletArguments.maximum-dead-containers-per-container','value': ['1']}, { 'key': 'kubeletArguments.image-gc-high-threshold','value': ['80']}, { 'key': 'kubeletArguments.image-gc-low-threshold','value': ['60']}]}, {'name': 'node-config-compute', 'labels': ['node-role.kubernetes.io/compute=true'], 'edits':[{ 'key': 'kubeletArguments.kube-reserved','value': ['cpu=100m,memory=128M']}, { 'key': 'kubeletArguments.system-reserved','value': ['cpu=100m,memory=256M']}, { 'key': 'kubeletArguments.pods-per-core','value': ['10']}, { 'key': 'kubeletArguments.max-pods','value': ['160']}, { 'key': 'kubeletArguments.maximum-dead-containers','value': ['5']}, { 'key': 'kubeletArguments.maximum-dead-containers-per-container','value': ['1']}, { 'key': 'kubeletArguments.image-gc-high-threshold','value': ['80']}, { 'key': 'kubeletArguments.image-gc-low-threshold','value': ['60']}]}, {'name': 'node-config-all-in-one',  'labels': ['node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/master=true' ,'node-role.kubernetes.io/compute=true' ]}]
+
+##############################################################################
+#
+# Red Hat Registry
+#
 # Workaround for docker image failure
 # https://access.redhat.com/solutions/3480921
 oreg_url=registry.access.redhat.com/openshift3/ose-\${component}:\${version}
 openshift_examples_modify_imagestreams=true
 
-# default selectors for router and registry services
-openshift_router_selector='node-role.kubernetes.io/infra=true'
-openshift_registry_selector='node-role.kubernetes.io/infra=true'
+##############################################################################
+#
+# Container images
+#
+openshift_storage_glusterfs_image=registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.11
+openshift_storage_glusterfs_block_image=registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.11
+openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-s3-server-rhel7:v3.11
+openshift_storage_glusterfs_heketi_image=registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.11
 
-# Configure registry to use Azure blob storage
+##############################################################################
+#
+# Openshift Registry Options
+#
+
+openshift_hosted_registry_routehost="registry.{{ openshift_master_default_subdomain }}"
+openshift_hosted_registry_selector="node-role.kubernetes.io/infra=true"
+
 openshift_hosted_registry_replicas=1
+openshift_hosted_registry_pullthrough=true
+openshift_hosted_registry_acceptschema2=true
+openshift_hosted_registry_enforcequota=true
+
 openshift_hosted_registry_storage_kind=object
 openshift_hosted_registry_storage_provider=azure_blob
 openshift_hosted_registry_storage_azure_blob_accountname=$REGISTRYSA
 openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY
 openshift_hosted_registry_storage_azure_blob_container=registry
 openshift_hosted_registry_storage_azure_blob_realm=$DOCKERREGISTRYREALM
-
-# Deploy Service Catalog
-openshift_enable_service_catalog=false
-
+openshift_hosted_registry_storage_volume_size=100Gi
+$ROUTINGCERTIFICATE
 
 
 
 
-# Enable HTPasswdPasswordIdentityProvider
-openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 
-# Specify CNS images
-openshift_storage_glusterfs_image=registry.access.redhat.com/rhgs3/rhgs-server-rhel7:v3.11
-openshift_storage_glusterfs_block_image=registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7:v3.11
-openshift_storage_glusterfs_s3_image=registry.access.redhat.com/rhgs3/rhgs-s3-server-rhel7:v3.11
-openshift_storage_glusterfs_heketi_image=registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7:v3.11
 
 # Setup metrics
 openshift_metrics_install_metrics=false
@@ -382,6 +451,9 @@ openshift_logging_kibana_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"
 openshift_logging_curator_nodeselector={"kubernetes.io/hostname":"ocpmec-infra02"}
 openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
 
+##########
+$CUSTOMCSS
+$PROXY
 
 EOF
 

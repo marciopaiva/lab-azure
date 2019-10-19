@@ -587,21 +587,21 @@ sleep 20
 # runuser -l $SUDOUSER -c "ansible-playbook -f 30 /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
 # if [ $? -eq 0 ]
 # then
-echo $(date) " - OpenShift Cluster installed successfully"
+# echo $(date) " - OpenShift Cluster installed successfully"
 # else
 #     echo $(date) " - OpenShift Cluster failed to install"
 #     exit 6
 # fi
 
 # Install OpenShift Atomic Client
-cd /root
-mkdir .kube
-runuser ${SUDOUSER} -c "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SUDOUSER}@${MASTER}01:~/.kube/config /tmp/kube-config"
-cp /tmp/kube-config /root/.kube/config
-mkdir /home/${SUDOUSER}/.kube
-cp /tmp/kube-config /home/${SUDOUSER}/.kube/config
-chown --recursive ${SUDOUSER} /home/${SUDOUSER}/.kube
-rm -f /tmp/kube-config
+# cd /root
+# mkdir .kube
+# runuser ${SUDOUSER} -c "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SUDOUSER}@${MASTER}01:~/.kube/config /tmp/kube-config"
+# cp /tmp/kube-config /root/.kube/config
+# mkdir /home/${SUDOUSER}/.kube
+# cp /tmp/kube-config /home/${SUDOUSER}/.kube/config
+# chown --recursive ${SUDOUSER} /home/${SUDOUSER}/.kube
+# rm -f /tmp/kube-config
 yum -y install atomic-openshift-clients
 
 # Adding user to OpenShift authentication file

@@ -98,48 +98,48 @@ else
     exit 6
 fi
 
-# Install Docker
-echo $(date) " - Installing Docker"
-yum -y install docker
+# # Install Docker
+# echo $(date) " - Installing Docker"
+# yum -y install docker
 
-# Update docker config for insecure registry
-echo "
-# Adding insecure-registry option required by OpenShift
-OPTIONS=\"\$OPTIONS --insecure-registry 172.30.0.0/16\"
-" >> /etc/sysconfig/docker
+# # Update docker config for insecure registry
+# echo "
+# # Adding insecure-registry option required by OpenShift
+# OPTIONS=\"\$OPTIONS --insecure-registry 172.30.0.0/16\"
+# " >> /etc/sysconfig/docker
 
-# Create thin pool logical volume for Docker
+# # Create thin pool logical volume for Docker
 
-echo $(date) " - Creating thin pool logical volume for Docker and starting service"
+# echo $(date) " - Creating thin pool logical volume for Docker and starting service"
 
-DOCKERVG=$( parted -m /dev/sdc print all 2>/dev/null | grep /dev/sd | cut -d':' -f1 | head -n1 )
+# DOCKERVG=$( parted -m /dev/sdc print all 2>/dev/null | grep /dev/sd | cut -d':' -f1 | head -n1 )
 
-echo "
-# Adding OpenShift data disk for docker
-STORAGE_DRIVER=overlay2
-CONTAINER_ROOT_LV_NAME=dockerlv
-CONTAINER_ROOT_LV_SIZE=100%FREE
-CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker
-DEVS=${DOCKERVG}
-VG=docker-vg
-EXTRA_STORAGE_OPTIONS='--storage-opt overlay2.size=3G'
-" >> /etc/sysconfig/docker-storage-setup
+# echo "
+# # Adding OpenShift data disk for docker
+# STORAGE_DRIVER=overlay2
+# CONTAINER_ROOT_LV_NAME=dockerlv
+# CONTAINER_ROOT_LV_SIZE=100%FREE
+# CONTAINER_ROOT_LV_MOUNT_PATH=/var/lib/docker
+# DEVS=${DOCKERVG}
+# VG=docker-vg
+# EXTRA_STORAGE_OPTIONS='--storage-opt overlay2.size=3G'
+# " >> /etc/sysconfig/docker-storage-setup
 
-# Running setup for docker storage
+# # Running setup for docker storage
 
-docker-storage-setup
-if [ $? -eq 0 ]
-then
-    echo "Docker thin pool logical volume created successfully"
-else
-    echo "Error creating logical volume for Docker"
-    exit 5
-fi
+# docker-storage-setup
+# if [ $? -eq 0 ]
+# then
+#     echo "Docker thin pool logical volume created successfully"
+# else
+#     echo "Error creating logical volume for Docker"
+#     exit 5
+# fi
 
-# Enable and start Docker services
+# # Enable and start Docker services
 
-systemctl enable docker
-systemctl start docker
+# systemctl enable docker
+# systemctl start docker
 
 echo $(date) " - Script Complete"
 

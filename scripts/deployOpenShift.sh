@@ -160,11 +160,26 @@ done
 
 # Create Infra nodes grouping 
 echo $(date) " - Creating Infra nodes grouping"
-for (( c=1; c<=$INFRACOUNT; c++ ))
-do
-    infragroup="$infragroup
+if [ $INFRACOUNT -gt 9 ]
+then
+    for (( c=1; c<=9; c++ ))
+	do
+		infragroup="$infragroup
 ${INFRA}0$c openshift_node_group_name='node-config-infra' openshift_node_problem_detector_install=true"
-done
+	done
+
+	for (( c=10; c<=$INFRACOUNT; c++ ))
+    do
+		infragroup="$infragroup
+${INFRA}$c openshift_node_group_name='node-config-infra' openshift_node_problem_detector_install=true"
+	done
+else
+	for (( c=1; c<=$INFRACOUNT; c++ ))
+	do
+		infragroup="$infragroup
+${INFRA}0$c openshift_node_group_name='node-config-infra' openshift_node_problem_detector_install=true"
+	done
+fi
 
 # Create Nodes grouping
 echo $(date) " - Creating Nodes grouping"
